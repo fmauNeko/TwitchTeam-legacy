@@ -6,6 +6,7 @@
 <link rel="import" href="../../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../../bower_components/core-menu/core-submenu.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../twitchteam-broadcaster/twitchteam-broadcaster.html">
 
 <polymer-element name="twitchteam-scaffold" attributes="label responsiveWidth">
   <template>
@@ -23,8 +24,9 @@
         </core-toolbar>
         <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
           <div class="element-label" hidden?="{{narrow}}">{{item.label}}</div>
-          <div id="frameContainer">
-            <iframe id="frame" on-load="{{frameLoaded}}"></iframe>
+          <div horizontal layout>
+            <div flex><iframe id="streamPlayer" src="//www.twitch.tv/{{broadcaster}}/embed" frameborder="0" scrolling="no" width="100%"></iframe></div>
+            <div><iframe id="streamChat" src="http://www.twitch.tv/{{broadcaster}}/chat?popout=" frameborder="0" scrolling="no" width="350"></iframe></div>
           </div>
         </div>
       </core-header-panel>
@@ -44,20 +46,20 @@
 
       Polymer({
         responsiveWidth: '860px',
+        broadcaster: '',
 
         ready: function() {
-          this.boundResizeFrame = this.resizeFrame.bind(this);
-          window.addEventListener('resize', this.updateFrameHeight.bind(this));
-          window.addEventListener('hashchange', this.parseLocationHash.bind(this));
+          window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
+          window.addEventListener('resize', this.updateStreamHeight.bind(this));
         },
 
         domReady: function() {
           this.async(function() {
-            this.parseLocationHash();
+            this.updateBroadcasterName();
           }, null, 300);
         },
 
-        parseLocationHash: function() {
+        updateBroadcasterName: function() {
           var route = window.location.hash.slice(1);
           for (var i = 0, item; item = this.$.menu.items[i]; i++) {
             if (item.getAttribute('tag') === route) {
@@ -75,8 +77,7 @@
               this.item.selected = 0;
             }
             this.item.tag = this.item.getAttribute('tag');
-            var url = this.item.getAttribute('url');
-            this.$.frame.contentWindow.location.replace(url);
+            this.broadcaster = this.item.tag;
             window.location.hash = this.item.tag;
             if (this.narrow) {
               this.$.drawerPanel.closeDrawer();
@@ -108,52 +109,23 @@
         cardTransitionDone: function() {
           if (this.$.card.classList.contains('move-up')) {
             this.$.card.classList.remove('move-up');
-            this.updateFrameHeight();
           }
+
+          this.updateStreamHeight();
         },
 
         togglePanel: function() {
           this.$.drawerPanel.togglePanel();
         },
 
-        frameLoaded: function() {
-          if (!this.item) {
-            return;
-          }
-          this.$.frame.contentWindow.addEventListener('polymer-ready', function() {
-            setTimeout(this.updateFrameHeight.bind(this), 100);
-            this.$.frame.contentWindow.addEventListener('core-resize',
-              this.boundResizeFrame, false);
-          }.bind(this));
-        },
-        resizeFrame: function() {
-          this.job('resizeFrame', function() {
-            this.updateFrameHeight();
-          });
-        },
-
-        updateFrameHeight: function() {
-          var frame = this.$.frame;
-          var doc = frame.contentDocument;
-          if (doc) {
-            var docElt = doc.documentElement;
-            // TODO(ffu); expose scroll info from header-panel
-            var pos = this.$.mainHeaderPanel.$.mainContainer.scrollTop;
-            frame.style.height = 'auto';
-            frame.style.height = docElt.scrollHeight + 'px';
-            if (doc.body) {
-              var s = doc.body.style;
-              s.overflow = 'hidden';
-              // to avoid the 'blinking bug'
-              // https://code.google.com/p/chromium/issues/detail?id=332024
-              s.webkitTransform = s.transform = 'translateZ(0)';
-            }
-            this.$.mainHeaderPanel.$.mainContainer.scrollTop = pos;
-          }
+        updateStreamHeight: function() {
+          var newHeight = this.$.streamPlayer.offsetWidth * 9.0 / 16.0 + 30.25;
+          this.$.streamPlayer.height = newHeight;
+          this.$.streamChat.height = newHeight;
         },
 
         viewSourceAction: function() {
-          window.open('view-source:' + this.$.frame.contentWindow.location.href,
+          window.open('view-source:' + this.contentWindow.location.href,
             this.item.tag);
         }
       });
