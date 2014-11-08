@@ -24,9 +24,13 @@
         </core-toolbar>
         <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
           <div class="element-label" hidden?="{{narrow}}">{{item.label}}</div>
-          <div horizontal layout>
-            <div flex><iframe id="streamPlayer" src="//www.twitch.tv/{{broadcaster}}/embed" frameborder="0" scrolling="no" width="100%"></iframe></div>
-            <div><iframe id="streamChat" src="http://www.twitch.tv/{{broadcaster}}/chat?popout=" frameborder="0" scrolling="no" width="350"></iframe></div>
+          <div id="frame" horizontal?="{{!narrow}}" vertical?="{{narrow}}" layout>
+            <div id="streamContainer" flex?="{{!narrow}}">
+              <iframe id="streamFrame" src="//www.twitch.tv/{{broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
+            </div>
+            <div id="chatContainer" flex?="{{narrow}}">
+              <iframe id="chatFrame" src="http://www.twitch.tv/{{broadcaster}}/chat?popout=" frameborder="0" scrolling="no"></iframe>
+            </div>
           </div>
         </div>
       </core-header-panel>
@@ -50,7 +54,7 @@
 
         ready: function() {
           window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
-          window.addEventListener('resize', this.updateStreamHeight.bind(this));
+          window.addEventListener('resize', this.updateHeights.bind(this));
         },
 
         domReady: function() {
@@ -81,9 +85,8 @@
             window.location.hash = this.item.tag;
             if (this.narrow) {
               this.$.drawerPanel.closeDrawer();
-            } else {
-              this.animateCard();
             }
+            this.animateCard();
           }
         },
 
@@ -110,18 +113,18 @@
           if (this.$.card.classList.contains('move-up')) {
             this.$.card.classList.remove('move-up');
           }
-
-          this.updateStreamHeight();
+          this.updateHeights();
         },
 
         togglePanel: function() {
           this.$.drawerPanel.togglePanel();
         },
 
-        updateStreamHeight: function() {
-          var newHeight = this.$.streamPlayer.offsetWidth * 9.0 / 16.0 + 30.25;
-          this.$.streamPlayer.height = newHeight;
-          this.$.streamChat.height = newHeight;
+        updateHeights: function() {
+          console.log((this.narrow ? this.$.chatContainer.offsetHeight : newHeight));
+          var newHeight = this.$.streamFrame.offsetWidth * 9.0 / 16.0 + 30.25;
+          this.$.streamFrame.height = newHeight;
+          this.$.chatFrame.height = (this.narrow ? this.$.chatContainer.offsetHeight : newHeight);
         },
 
         viewSourceAction: function() {

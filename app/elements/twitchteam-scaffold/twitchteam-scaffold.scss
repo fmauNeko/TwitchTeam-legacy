@@ -109,10 +109,16 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
 }
 
 #frame {
-  display: block;
   width: 100%;
-  min-height: 600px;
   border: none;
+}
+
+#streamFrame {
+  width: 100%;
+}
+
+#chatFrame {
+  width: 350px;
 }
 
 #drawerPanel[narrow] [main] {
@@ -132,13 +138,14 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
 #drawerPanel[narrow] #frame {
   position: absolute;
   min-height: 100%;
-}
-
-#drawerPanel[narrow] #frameContainer {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
   overflow: auto;
+}
+
+#drawerPanel[narrow] #chatFrame {
+  width: 100%;
 }
