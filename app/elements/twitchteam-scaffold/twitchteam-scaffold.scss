@@ -12,7 +12,7 @@
 }
 
 core-toolbar {
-  background-color: #5264ae;
+  background-color: #4CAF50;
   color: #fff;
   font-size: 20px;
   font-weight: 400;
@@ -75,8 +75,8 @@ polyfill-next-selector { content: '.sourceButton';}
 
 polyfill-next-selector { content: '.sourceButton:not(.fallback)';}
 ::content .sourceButton:not(.fallback) {
-  background-color: #fcfcfc;
-  color: #666464;
+  background-color: #AEEA00;
+  color: #000;
   bottom: -28px;
   right: 24px;
 }
@@ -105,7 +105,7 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
   letter-spacing: 0.05em;
   font-size: 24px;
   font-weight: 400;
-  color: #5265a2;
+  color: #388E3C;
 }
 
 #frame {
