@@ -33,15 +33,15 @@
       'use strict';
 
       Polymer({
-        avatar: 'http://static-cdn.jtvnw.net/jtv_user_pictures/fmaunier-profile_image-80afe6408e865a9b-300x300.png',
+        avatar: '',
         broadcaster: '',
-        displayName: 'Jean-Roger',
-        followers: '504',
-        game: 'Ittle Dew',
+        displayName: '',
+        followers: 0,
+        game: '',
         live: false,
-        status: '[FR/EN] Ittle Dew Any% Speedruns',
-        viewers: '25',
-        views: '15300',
+        status: '',
+        viewers: 0,
+        views: 0,
 
         ready: function(){
           twitchThing.warehouse.RegisterObserver({
@@ -67,7 +67,15 @@
 
         updateStatus: function(thing){
           if (thing.ID == this.broadcaster){
+            this.avatar = thing.String("avatar");
+            this.broadcaster = thing.String("broadcaster");
+            this.displayName = thing.String("displayName");
+            this.followers = thing.Int("followers");
+            this.game = thing.String("game");
             this.live = thing.Boolean("live");
+            this.status = thing.String("status");
+            this.viewers = thing.Int("viewers");
+            this.views = thing.Int("views");
           }
         }
       });
