@@ -16,19 +16,19 @@
           <content select=".menuButton" on-tap="{{togglePanel}}">
             <core-icon-button class="menuButton fallback" icon="menu"></core-icon-button>
           </content>
-          <div hidden?="{{!narrow}}">{{item.label}}</div>
+          <div hidden?="{{!narrow}}">{{item.displayName}}</div>
           <content select=".sourceButton" on-tap="{{viewSourceAction}}">
             <core-icon-button class="sourceButton fallback" icon="launch"></core-icon-button>
           </content>
         </core-toolbar>
         <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
-          <div class="element-label" hidden?="{{narrow}}">{{item.label}}</div>
+          <div class="element-label" hidden?="{{narrow}}">{{item.displayName}}</div>
           <div id="frame" horizontal?="{{!narrow}}" vertical?="{{narrow}}" layout>
             <div id="streamContainer" flex?="{{!narrow}}">
-              <iframe id="streamFrame" src="//www.twitch.tv/{{broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
+              <iframe id="streamFrame" src="//www.twitch.tv/{{item.broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
             </div>
             <div id="chatContainer" flex?="{{narrow}}">
-              <iframe id="chatFrame" src="http://www.twitch.tv/{{broadcaster}}/chat?popout=" frameborder="0" scrolling="no"></iframe>
+              <iframe id="chatFrame" src="http://www.twitch.tv/{{item.broadcaster}}/chat?popout=" frameborder="0" scrolling="no"></iframe>
             </div>
           </div>
         </div>
@@ -49,7 +49,6 @@
 
       Polymer({
         responsiveWidth: '860px',
-        broadcaster: '',
 
         ready: function() {
           window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
@@ -65,7 +64,7 @@
         updateBroadcasterName: function() {
           var route = window.location.hash.slice(1);
           for (var i = 0, item; item = this.$.menu.items[i]; i++) {
-            if (item.getAttribute('tag') === route) {
+            if (item.getAttribute('broadcaster') === route) {
               this.$.menu.selected = i;
               return;
             }
@@ -79,9 +78,8 @@
             if (this.item.children.length) {
               this.item.selected = 0;
             }
-            this.item.tag = this.item.getAttribute('tag');
-            this.broadcaster = this.item.tag;
-            window.location.hash = this.item.tag;
+            this.item.broadcaster = this.item.getAttribute('broadcaster');
+            window.location.hash = this.item.broadcaster;
             if (this.narrow) {
               this.$.drawerPanel.closeDrawer();
             }
@@ -128,7 +126,7 @@
 
         viewSourceAction: function() {
           window.open('view-source:' + this.contentWindow.location.href,
-            this.item.tag);
+            this.item.broadcaster);
         }
       });
     })();

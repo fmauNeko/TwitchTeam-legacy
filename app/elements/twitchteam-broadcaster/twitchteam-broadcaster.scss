@@ -1,3 +1,76 @@
-:host {
+twitchteam-broadcaster {
   display: block;
+  position: relative;
+  font-size: 16px;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: pointer;
+  box-sizing: border-box;
+  height: 96px;
+  white-space: nowrap;
+  padding: 4px;
+}
+
+twitchteam-broadcaster::shadow #ripple {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+twitchteam-broadcaster::shadow #avatar {
+  width: 64px;
+  height: 64px;
+}
+
+twitchteam-broadcaster::shadow #infos {
+  height: 68px;
+  margin-left: 8px;
+  margin-right: 4px;
+}
+
+twitchteam-broadcaster::shadow #infos div {
+  min-height: 20px;
+  white-space: normal;
+}
+
+twitchteam-broadcaster::shadow #broadcasterName {
+  color: #2E7D32;
+  font-weight: bold;
+}
+
+twitchteam-broadcaster::shadow #game {
+  font-size: 12px;
+}
+
+twitchteam-broadcaster::shadow #status {
+  font-size: 14px;
+}
+
+twitchteam-broadcaster::shadow #live {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  padding-left: 4px;
+  padding-right: 4px;
+  color: #fff;
+  background-color: #757575;
+}
+
+twitchteam-broadcaster::shadow #live[live] {
+  background-color: #388E3C;
+}
+
+twitchteam-broadcaster::shadow #live core-icon {
+  width: 18px;
+  height: 18px;
+}
+
+twitchteam-broadcaster::shadow .count {
+  margin-left: 4px;
+  margin-right: 4px;
 }
