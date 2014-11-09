@@ -5,3 +5,11 @@ test/temp
 app/bower_components
 .tmp
 test/bower_components/
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/dataSources.ids
+.idea/dataSources.xml
+.idea/sqlDataSources.xml
+.idea/dynamic.xml
+.idea/uiDesigner.xml
