@@ -12,7 +12,7 @@
     <paper-ripple id="ripple"></paper-ripple>
 
     <img id="avatar" src="{{avatar}}" self-start/>
-    <div id="infos" self-start vertical around-justified layout center>
+    <div id="infos" self-start vertical around-justified layout center flex>
       <div id="broadcasterName">{{displayName}}</div>
       <div id="game">playing {{game}}</div>
       <div id="status">{{status}}</div>
@@ -32,7 +32,6 @@
 
       Polymer({
         avatar: '',
-        broadcaster: '',
         displayName: '',
         followers: 0,
         game: '',
@@ -40,15 +39,6 @@
         status: '',
         viewers: 0,
         views: 0,
-
-        ready: function(){
-          twitchThing.warehouse.RegisterObserver({
-            New: this.updateStatus.bind(this),
-            Deleted: function(){},
-            Updated: this.updateStatus.bind(this),
-            Define: function(){}
-          });
-        },
 
         eventDelegates: {
           'down': 'downAction',
