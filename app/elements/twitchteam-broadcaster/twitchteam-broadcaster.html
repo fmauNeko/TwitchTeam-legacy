@@ -7,10 +7,8 @@
 <link href="twitchteam-broadcaster.css" rel="stylesheet">
 
 <polymer-element name="twitchteam-broadcaster" attributes="broadcaster" center horizontal layout>
-
   <template>
     <paper-ripple id="ripple"></paper-ripple>
-
     <img id="avatar" src="{{avatar}}" self-start/>
     <div id="infos" self-start vertical around-justified layout center flex>
       <div id="broadcasterName">{{displayName}}</div>
@@ -18,11 +16,19 @@
       <div id="status">{{status}}</div>
     </div>
     <div id="live" live?="{{live}}" horizontal justified layout center>
-      <div class="well"><core-icon icon="{{live ? 'check-circle-blank' : 'av:stop'}}" red?="{{live}}"></core-icon><span class="count">{{live ? 'LIVE' : 'OFFLINE'}}</span></div>
+      <div class="well" horizontal layout center>
+        <core-icon icon="{{live ? 'check-circle-blank' : 'av:stop'}}" red?="{{live}}"></core-icon>
+        <div class="count">{{live ? 'LIVE' : 'OFFLINE'}}</div>
+      </div>
       <div flex></div>
-      <div class="well" margin><core-icon icon="social:person" red></core-icon><span class="count">{{viewers}}</span></div>
-      <div class="well" margin><core-icon icon="visibility"></core-icon><span class="count">{{views}}</span></div>
-      <div class="well"><core-icon icon="favorite"></core-icon><span class="count">{{followers}}</span></div>
+      <div class="well" horizontal layout center>
+        <core-icon icon="social:person" red></core-icon>
+        <div class="count" margin>{{viewers}}</div>
+        <core-icon icon="visibility"></core-icon>
+        <div class="count" margin>{{views}}</div>
+        <core-icon icon="favorite"></core-icon>
+        <div class="count">{{followers}}</div>
+      </div>
     </div>
   </template>
 
@@ -54,17 +60,15 @@
         },
 
         updateStatus: function(thing){
-          if (thing.ID == this.broadcaster){
-            this.avatar = thing.String("avatar");
-            this.broadcaster = thing.String("broadcaster");
-            this.displayName = thing.String("displayName");
-            this.followers = thing.Int("followers");
-            this.game = thing.String("game");
-            this.live = thing.Boolean("live");
-            this.status = thing.String("status");
-            this.viewers = thing.Int("viewers");
-            this.views = thing.Int("views");
-          }
+          this.avatar = thing.String("avatar");
+          this.broadcaster = thing.String("broadcaster");
+          this.displayName = thing.String("displayName");
+          this.followers = thing.Int("followers");
+          this.game = thing.String("game");
+          this.live = thing.Boolean("live");
+          this.status = thing.String("status");
+          this.viewers = thing.Int("viewers");
+          this.views = thing.Int("views");
         }
       });
 

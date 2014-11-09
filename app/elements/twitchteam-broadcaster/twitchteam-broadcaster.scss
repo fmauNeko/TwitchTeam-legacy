@@ -66,7 +66,7 @@ twitchteam-broadcaster::shadow #live[live] {
 }
 
 twitchteam-broadcaster::shadow #live .well {
-  font-size: 16px;
+  font-size: 14px;
   padding: 2px 4px;
   background-color: #616161;
   border: 1px solid #424242;
@@ -79,17 +79,17 @@ twitchteam-broadcaster::shadow #live[live] .well {
   border-color: #1B5E20;
 }
 
-twitchteam-broadcaster::shadow #live .well[margin] {
+twitchteam-broadcaster::shadow #live [margin] {
   margin-right: 4px;
 }
 
 twitchteam-broadcaster::shadow #live core-icon {
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
 }
 
 twitchteam-broadcaster::shadow #live core-icon[red] {
-  color: #b71c1c;
+  color: #f00;
 }
 
 twitchteam-broadcaster::shadow .count {
