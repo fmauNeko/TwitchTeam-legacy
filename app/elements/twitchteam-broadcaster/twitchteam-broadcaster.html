@@ -38,10 +38,19 @@
         displayName: 'Jean-Roger',
         followers: '504',
         game: 'Ittle Dew',
-        live: true,
+        live: false,
         status: '[FR/EN] Ittle Dew Any% Speedruns',
         viewers: '25',
         views: '15300',
+
+        ready: function(){
+          twitchThing.warehouse.RegisterObserver({
+            New: this.updateStatus.bind(this),
+            Deleted: function(){},
+            Updated: this.updateStatus.bind(this),
+            Define: function(){}
+          });
+        },
 
         eventDelegates: {
           'down': 'downAction',
@@ -55,6 +64,12 @@
         upAction: function(e) {
           this.$.ripple.upAction(e);
         },
+
+        updateStatus: function(thing){
+          if (thing.ID == this.broadcaster){
+            this.live = thing.Boolean("live");
+          }
+        }
       });
 
     })();
