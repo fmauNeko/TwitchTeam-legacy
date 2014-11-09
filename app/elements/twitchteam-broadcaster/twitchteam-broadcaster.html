@@ -1,5 +1,6 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
 <link rel="import" href="../../bower_components/core-icons/social-icons.html">
 <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 
@@ -17,14 +18,11 @@
       <div id="status">{{status}}</div>
     </div>
     <div id="live" live?="{{live}}" horizontal justified layout center>
-      <div>{{live ? 'LIVE' : 'OFFLINE'}}</div>
+      <div class="well"><core-icon icon="{{live ? 'check-circle-blank' : 'av:stop'}}" red?="{{live}}"></core-icon><span class="count">{{live ? 'LIVE' : 'OFFLINE'}}</span></div>
       <div flex></div>
-      <core-icon icon="social:person" style="color: #b71c1c;"></core-icon>
-      <div class="count">{{viewers}}</div>
-      <core-icon icon="visibility"></core-icon>
-      <div class="count">{{views}}</div>
-      <core-icon icon="favorite"></core-icon>
-      <div class="count">{{followers}}</div>
+      <div class="well" margin><core-icon icon="social:person" red></core-icon><span class="count">{{viewers}}</span></div>
+      <div class="well" margin><core-icon icon="visibility"></core-icon><span class="count">{{views}}</span></div>
+      <div class="well"><core-icon icon="favorite"></core-icon><span class="count">{{followers}}</span></div>
     </div>
   </template>
 
@@ -38,7 +36,7 @@
         displayName: 'Jean-Roger',
         followers: '504',
         game: 'Ittle Dew',
-        live: true,
+        live: false,
         status: '[FR/EN] Ittle Dew Any% Speedruns',
         viewers: '25',
         views: '15300',

@@ -6,7 +6,7 @@ twitchteam-broadcaster {
   user-select: none;
   cursor: pointer;
   box-sizing: border-box;
-  height: 96px;
+  height: 104px;
   white-space: nowrap;
   padding: 4px;
 }
@@ -54,7 +54,7 @@ twitchteam-broadcaster::shadow #live {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 24px;
+  height: 32px;
   padding-left: 4px;
   padding-right: 4px;
   color: #fff;
@@ -65,12 +65,33 @@ twitchteam-broadcaster::shadow #live[live] {
   background-color: #388E3C;
 }
 
+twitchteam-broadcaster::shadow #live .well {
+  font-size: 16px;
+  padding: 2px 4px;
+  background-color: #616161;
+  border: 1px solid #424242;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05);
+}
+
+twitchteam-broadcaster::shadow #live[live] .well {
+  background-color: #2E7D32;
+  border-color: #1B5E20;
+}
+
+twitchteam-broadcaster::shadow #live .well[margin] {
+  margin-right: 4px;
+}
+
 twitchteam-broadcaster::shadow #live core-icon {
-  width: 18px;
-  height: 18px;
+  width: 17px;
+  height: 17px;
+}
+
+twitchteam-broadcaster::shadow #live core-icon[red] {
+  color: #b71c1c;
 }
 
 twitchteam-broadcaster::shadow .count {
   margin-left: 4px;
-  margin-right: 4px;
 }
