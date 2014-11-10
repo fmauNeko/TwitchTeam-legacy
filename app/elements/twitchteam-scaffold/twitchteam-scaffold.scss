@@ -27,6 +27,9 @@ core-toolbar::shadow #bottomBar {
 }
 
 .main-label {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 28px;
+  font-weight: bold;
   padding: 0 0 20px 60px;
 }
 
@@ -97,6 +100,7 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
 }
 
 .element-label {
+  font-family: 'Montserrat', sans-serif;
   height: 80px;
   line-height: 80px;
   padding-left: 24px;
