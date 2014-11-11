@@ -10,8 +10,10 @@
 // http://www.polymer-project.org/platform/shadow-dom.html#wrappers
 })(wrap(document));
 
-TwitchThing = function() {
+var TwitchThing = function() {
   'use strict';
+
+  this.broadcasters = {live: [], offline: []};
 
   this.warehouse = new ThingModel.Warehouse();
 
@@ -22,15 +24,56 @@ TwitchThing = function() {
       broadcasterElement.setAttribute('id', thing.ID + 'Status');
       broadcasterElement.updateStatus(thing);
 
-      var scaffold = document.getElementsByTagName('twitchteam-scaffold')[0];
-      scaffold.appendChild(broadcasterElement);
+      if(thing.Boolean('live')) {
+        twitchThing.broadcasters.live.push(thing.ID);
+        twitchThing.broadcasters.live.sort();
+      } else {
+        twitchThing.broadcasters.offline.push(thing.ID);
+        twitchThing.broadcasters.offline.sort();
+      }
+
+      var elements = twitchThing.broadcasters.live.concat(twitchThing.broadcasters.offline);
+      var index = elements.indexOf(thing.ID);
+
+      if(index === (elements.length - 1)) {
+        document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
+      } else {
+        var nextElement = document.getElementById(elements[index+1] + 'Status');
+        nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+      }
     },
-    Deleted: function(){},
+    Deleted: function() {},
     Updated: function(thing) {
       var broadcasterElement = document.getElementById(thing.ID + 'Status');
 
       if(broadcasterElement !== null) {
         broadcasterElement.updateStatus(thing);
+
+        var goingLive = thing.Boolean('live') && (twitchThing.broadcasters.offline.indexOf(thing.ID) > -1);
+        var goingOffline = !thing.Boolean('live') && (twitchThing.broadcasters.live.indexOf(thing.ID) > -1);
+
+        if(goingLive) {
+          twitchThing.broadcasters.offline.splice(twitchThing.broadcasters.offline.indexOf(thing.ID), 1);
+          twitchThing.broadcasters.live.push(thing.ID);
+          twitchThing.broadcasters.live.sort();
+        } else if(goingOffline) {
+          twitchThing.broadcasters.live.splice(twitchThing.broadcasters.live.indexOf(thing.ID), 1);
+          twitchThing.broadcasters.offline.push(thing.ID);
+          twitchThing.broadcasters.offline.sort();
+        }
+
+        if(goingLive || goingOffline) {
+          var elements = twitchThing.broadcasters.live.concat(twitchThing.broadcasters.offline);
+          var index = elements.indexOf(thing.ID);
+
+          broadcasterElement.parentElement.removeChild(broadcasterElement);
+          if (index === (elements.length - 1)) {
+            document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
+          } else {
+            var nextElement = document.getElementById(elements[index + 1] + 'Status');
+            nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+          }
+        }
       }
     },
     Define: function(){}
