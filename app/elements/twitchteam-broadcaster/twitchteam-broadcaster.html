@@ -13,7 +13,7 @@
     <div id="infos" self-start vertical around-justified layout center flex>
       <div id="broadcasterName">{{displayName}}</div>
       <div id="game">playing {{game}}</div>
-      <div id="status">{{status}}</div>
+      <div id="status"><div id="innerStatus">{{status}}</div></div>
     </div>
     <div id="live" live?="{{live}}" horizontal justified layout center>
       <div class="well" horizontal layout center>
@@ -45,6 +45,23 @@
         status: '',
         viewers: 0,
         views: 0,
+
+        domReady: function() {
+          this.async(function() {
+            var statusWidth = this.$.innerStatus.scrollWidth;
+            var infosWidth = this.$.infos.offsetWidth;
+
+            if(statusWidth > infosWidth) {
+              var scrollDistance = statusWidth - infosWidth;
+              document.timeline.play(new Animation(this.$.innerStatus, [
+                {offset: 0.4, transform: "translateX(-" + scrollDistance + ")"},
+                {offset: 0.5, transform: "translateX(-" + scrollDistance + ")"},
+                {offset: 0.9, transform: "translateX(0)"},
+                {offset: 1, transform: "translateX(0)"}
+              ], {duration: scrollDistance * 125, iterations: Infinity}));
+            }
+          }, null, 3000);
+        },
 
         eventDelegates: {
           'down': 'downAction',

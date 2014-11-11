@@ -32,8 +32,13 @@ twitchteam-broadcaster::shadow #infos {
 }
 
 twitchteam-broadcaster::shadow #infos div {
-  min-height: 20px;
-  white-space: normal;
+  height: 20px;
+
+}
+
+twitchteam-broadcaster::shadow #infos #status {
+  overflow: hidden;
+  width: 100%;
 }
 
 twitchteam-broadcaster::shadow #broadcasterName {
