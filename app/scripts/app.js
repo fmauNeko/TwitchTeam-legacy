@@ -1,19 +1,7 @@
-(function(document) {
-  'use strict';
-
-  document.addEventListener('polymer-ready', function() {
-    // Perform some behaviour
-    console.log('Polymer is ready to rock!');
-  });
-
-// wrap document so it plays nice with other libraries
-// http://www.polymer-project.org/platform/shadow-dom.html#wrappers
-})(wrap(document));
+var Broadcasters = {live: [], offline: []};
 
 var TwitchThing = function() {
   'use strict';
-
-  this.broadcasters = {live: [], offline: []};
 
   this.warehouse = new ThingModel.Warehouse();
 
@@ -25,14 +13,14 @@ var TwitchThing = function() {
       broadcasterElement.updateStatus(thing);
 
       if(thing.Boolean('live')) {
-        twitchThing.broadcasters.live.push(thing.ID);
-        twitchThing.broadcasters.live.sort();
+        Broadcasters.live.push(thing.ID);
+        Broadcasters.live.sort();
       } else {
-        twitchThing.broadcasters.offline.push(thing.ID);
-        twitchThing.broadcasters.offline.sort();
+        Broadcasters.offline.push(thing.ID);
+        Broadcasters.offline.sort();
       }
 
-      var elements = twitchThing.broadcasters.live.concat(twitchThing.broadcasters.offline);
+      var elements = Broadcasters.live.concat(Broadcasters.offline);
       var index = elements.indexOf(thing.ID);
 
       if(index === (elements.length - 1)) {
@@ -49,21 +37,21 @@ var TwitchThing = function() {
       if(broadcasterElement !== null) {
         broadcasterElement.updateStatus(thing);
 
-        var goingLive = thing.Boolean('live') && (twitchThing.broadcasters.offline.indexOf(thing.ID) > -1);
-        var goingOffline = !thing.Boolean('live') && (twitchThing.broadcasters.live.indexOf(thing.ID) > -1);
+        var goingLive = thing.Boolean('live') && (Broadcasters.offline.indexOf(thing.ID) > -1);
+        var goingOffline = !thing.Boolean('live') && (Broadcasters.live.indexOf(thing.ID) > -1);
 
         if(goingLive) {
-          twitchThing.broadcasters.offline.splice(twitchThing.broadcasters.offline.indexOf(thing.ID), 1);
-          twitchThing.broadcasters.live.push(thing.ID);
-          twitchThing.broadcasters.live.sort();
+          Broadcasters.offline.splice(Broadcasters.offline.indexOf(thing.ID), 1);
+          Broadcasters.live.push(thing.ID);
+          Broadcasters.live.sort();
         } else if(goingOffline) {
-          twitchThing.broadcasters.live.splice(twitchThing.broadcasters.live.indexOf(thing.ID), 1);
-          twitchThing.broadcasters.offline.push(thing.ID);
-          twitchThing.broadcasters.offline.sort();
+          Broadcasters.live.splice(Broadcasters.live.indexOf(thing.ID), 1);
+          Broadcasters.offline.push(thing.ID);
+          Broadcasters.offline.sort();
         }
 
         if(goingLive || goingOffline) {
-          var elements = twitchThing.broadcasters.live.concat(twitchThing.broadcasters.offline);
+          var elements = Broadcasters.live.concat(Broadcasters.offline);
           var index = elements.indexOf(thing.ID);
 
           broadcasterElement.parentElement.removeChild(broadcasterElement);
@@ -82,4 +70,14 @@ var TwitchThing = function() {
   this.client = new ThingModel.WebSockets.Client('TwitchTeam', 'ws://' + window.location.hostname + ':8083/', this.warehouse);
 };
 
-var twitchThing = new TwitchThing();
+(function(document) {
+  'use strict';
+
+  document.addEventListener('polymer-ready', function() {
+    var twitchThing = new TwitchThing();
+    console.log('Polymer is ready to rock!');
+  });
+
+// wrap document so it plays nice with other libraries
+// http://www.polymer-project.org/platform/shadow-dom.html#wrappers
+})(wrap(document));

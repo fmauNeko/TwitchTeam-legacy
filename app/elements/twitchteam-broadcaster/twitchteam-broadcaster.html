@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/core-icons/social-icons.html">
 <link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
 
-<link href="twitchteam-broadcaster.css" rel="stylesheet">
+<link href="twitchteam-broadcaster.css" rel="stylesheet" shim-shadowdom>
 
 <polymer-element name="twitchteam-broadcaster" attributes="broadcaster" center horizontal layout>
   <template>
@@ -54,11 +54,10 @@
             if(statusWidth > infosWidth) {
               var scrollDistance = statusWidth - infosWidth;
               document.timeline.play(new Animation(this.$.innerStatus, [
-                {offset: 0.4, transform: "translateX(-" + scrollDistance + ")"},
-                {offset: 0.5, transform: "translateX(-" + scrollDistance + ")"},
-                {offset: 0.9, transform: "translateX(0)"},
-                {offset: 1, transform: "translateX(0)"}
-              ], {duration: scrollDistance * 125, iterations: Infinity}));
+                {offset: 0.2, transform: "translateX(0)"},
+                {offset: 0.8, transform: "translateX(-" + scrollDistance + ")"},
+                {offset: 1, transform: "translateX(-" + scrollDistance + ")"}
+              ], {duration: scrollDistance * 100, iterations: Infinity}));
             }
           }, null, 3000);
         },
