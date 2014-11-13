@@ -22,8 +22,8 @@
       </div>
       <div flex></div>
       <div class="well" horizontal layout center>
-        <core-icon icon="social:person" red></core-icon>
-        <div class="count" margin>{{viewers}}</div>
+        <core-icon icon="social:person" hidden?="{{!live}}" red></core-icon>
+        <div class="count" hidden?="{{!live}}" margin>{{viewers}}</div>
         <core-icon icon="visibility"></core-icon>
         <div class="count" margin>{{views}}</div>
         <core-icon icon="favorite"></core-icon>
@@ -39,12 +39,12 @@
       Polymer({
         avatar: '',
         displayName: '',
-        followers: 0,
+        followers: '',
         game: '',
         live: false,
         status: '',
-        viewers: 0,
-        views: 0,
+        viewers: '',
+        views: '',
 
         domReady: function() {
           this.async(function() {
@@ -79,12 +79,12 @@
           this.avatar = thing.String("avatar");
           this.broadcaster = thing.String("broadcaster");
           this.displayName = thing.String("displayName");
-          this.followers = thing.Int("followers");
+          this.followers = thing.Int("followers").toLocaleString();
           this.game = thing.String("game");
           this.live = thing.Boolean("live");
           this.status = thing.String("status");
-          this.viewers = thing.Int("viewers");
-          this.views = thing.Int("views");
+          this.viewers = thing.Int("viewers").toLocaleString();
+          this.views = thing.Int("views").toLocaleString();
         }
       });
 
