@@ -1,4 +1,4 @@
-var Broadcasters = {live: [], offline: []};
+var Broadcasters = {alwaysontop: [], live: [], offline: []};
 
 var TwitchThing = function() {
   'use strict';
@@ -12,7 +12,10 @@ var TwitchThing = function() {
       broadcasterElement.setAttribute('id', thing.ID + 'Status');
       broadcasterElement.updateStatus(thing);
 
-      if(thing.Boolean('live')) {
+      if(thing.Boolean('alwaysontop')) {
+        Broadcasters.alwaysontop.push(thing.ID);
+        Broadcasters.alwaysontop.sort();
+      } else if(thing.Boolean('live')) {
         Broadcasters.live.push(thing.ID);
         Broadcasters.live.sort();
       } else {
@@ -20,7 +23,7 @@ var TwitchThing = function() {
         Broadcasters.offline.sort();
       }
 
-      var elements = Broadcasters.live.concat(Broadcasters.offline);
+      var elements = Broadcasters.alwaysontop.concat(Broadcasters.live.concat(Broadcasters.offline));
       var index = elements.indexOf(thing.ID);
 
       if(index === (elements.length - 1)) {
@@ -32,34 +35,36 @@ var TwitchThing = function() {
     },
     Deleted: function() {},
     Updated: function(thing) {
-      var broadcasterElement = document.getElementById(thing.ID + 'Status');
+      if(!thing.Boolean('alwaysontop')) {
+        var broadcasterElement = document.getElementById(thing.ID + 'Status');
 
-      if(broadcasterElement !== null) {
-        broadcasterElement.updateStatus(thing);
+        if (broadcasterElement !== null) {
+          broadcasterElement.updateStatus(thing);
 
-        var goingLive = thing.Boolean('live') && (Broadcasters.offline.indexOf(thing.ID) > -1);
-        var goingOffline = !thing.Boolean('live') && (Broadcasters.live.indexOf(thing.ID) > -1);
+          var goingLive = thing.Boolean('live') && (Broadcasters.offline.indexOf(thing.ID) > -1);
+          var goingOffline = !thing.Boolean('live') && (Broadcasters.live.indexOf(thing.ID) > -1);
 
-        if(goingLive) {
-          Broadcasters.offline.splice(Broadcasters.offline.indexOf(thing.ID), 1);
-          Broadcasters.live.push(thing.ID);
-          Broadcasters.live.sort();
-        } else if(goingOffline) {
-          Broadcasters.live.splice(Broadcasters.live.indexOf(thing.ID), 1);
-          Broadcasters.offline.push(thing.ID);
-          Broadcasters.offline.sort();
-        }
+          if (goingLive) {
+            Broadcasters.offline.splice(Broadcasters.offline.indexOf(thing.ID), 1);
+            Broadcasters.live.push(thing.ID);
+            Broadcasters.live.sort();
+          } else if (goingOffline) {
+            Broadcasters.live.splice(Broadcasters.live.indexOf(thing.ID), 1);
+            Broadcasters.offline.push(thing.ID);
+            Broadcasters.offline.sort();
+          }
 
-        if(goingLive || goingOffline) {
-          var elements = Broadcasters.live.concat(Broadcasters.offline);
-          var index = elements.indexOf(thing.ID);
+          if (goingLive || goingOffline) {
+            var elements = Broadcasters.alwaysontop.concat(Broadcasters.live.concat(Broadcasters.offline));
+            var index = elements.indexOf(thing.ID);
 
-          broadcasterElement.parentElement.removeChild(broadcasterElement);
-          if (index === (elements.length - 1)) {
-            document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
-          } else {
-            var nextElement = document.getElementById(elements[index + 1] + 'Status');
-            nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+            broadcasterElement.parentElement.removeChild(broadcasterElement);
+            if (index === (elements.length - 1)) {
+              document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
+            } else {
+              var nextElement = document.getElementById(elements[index + 1] + 'Status');
+              nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+            }
           }
         }
       }
