@@ -93,4 +93,5 @@ var TwitchThing = function() {
 })(window, document,'script','//www.google-analytics.com/analytics.js','ga');
 
 ga('create', config.analyticsId, 'auto');
+ga('require', 'displayfeatures');
 ga('send', 'pageview');
