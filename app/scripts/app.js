@@ -80,6 +80,13 @@ var TwitchThing = function() {
 
   document.addEventListener('polymer-ready', function() {
     var twitchThing = new TwitchThing();
+
+    Twitch.init({clientId: config.twitchClientId}, function(error, status) {
+      if (error) {
+        console.log(error);
+      }
+    });
+
     console.log('Polymer is ready to rock!');
   });
 

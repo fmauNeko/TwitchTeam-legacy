@@ -17,8 +17,8 @@
             <core-icon-button class="menuButton fallback" icon="menu"></core-icon-button>
           </content>
           <div hidden?="{{!narrow}}">{{item.displayName}}</div>
-          <content select=".sourceButton" on-tap="{{viewSourceAction}}">
-            <core-icon-button class="sourceButton fallback" icon="launch"></core-icon-button>
+          <content select=".sourceButton" on-tap="{{loginWithTwitch}}">
+            <core-icon-button class="sourceButton fallback" icon="twitchteam:twitch"></core-icon-button>
           </content>
         </core-toolbar>
         <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
@@ -49,10 +49,15 @@
 
       Polymer({
         responsiveWidth: '860px',
+        loggedIn: false,
 
         ready: function() {
           window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
           window.addEventListener('resize', this.updateHeights.bind(this));
+          Twitch.events.addListener('auth.login', function() {
+            this.loggedIn = true;
+            document.getElementsByClassName('sourceButton')[0].hidden = true;
+          });
         },
 
         domReady: function() {
@@ -124,9 +129,10 @@
           this.$.chatFrame.height = (this.narrow ? this.$.chatContainer.offsetHeight : newHeight);
         },
 
-        viewSourceAction: function() {
-          window.open('view-source:' + this.contentWindow.location.href,
-            this.item.broadcaster);
+        loginWithTwitch: function() {
+          Twitch.login({
+            scope: ['user_read', 'user_follows_edit', 'chat_login']
+          });
         }
       });
     })();
