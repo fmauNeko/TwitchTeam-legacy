@@ -72,7 +72,7 @@ var TwitchThing = function() {
     Define: function(){}
   });
 
-  this.client = new ThingModel.WebSockets.Client('TwitchTeam', 'ws://' + window.location.hostname + ':8083/', this.warehouse);
+  this.client = new ThingModel.WebSockets.Client('TwitchTeam', config.webSocket, this.warehouse);
 };
 
 (function(document) {
