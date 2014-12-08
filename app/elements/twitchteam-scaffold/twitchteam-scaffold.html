@@ -5,6 +5,7 @@
 <link rel="import" href="../../bower_components/core-menu/core-menu.html">
 <link rel="import" href="../../bower_components/core-menu/core-submenu.html">
 <link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../twitchteam-broadcaster/twitchteam-broadcaster.html">
 
 <polymer-element name="twitchteam-scaffold" attributes="label responsiveWidth">
@@ -17,12 +18,20 @@
             <core-icon-button class="menuButton fallback" icon="menu"></core-icon-button>
           </content>
           <div hidden?="{{!narrow}}">{{item.displayName}}</div>
-          <content select=".sourceButton" on-tap="{{viewSourceAction}}">
-            <core-icon-button class="sourceButton fallback" icon="launch"></core-icon-button>
+          <content select=".sourceButton" on-tap="{{loginWithTwitch}}">
+            <core-icon-button class="sourceButton fallback" icon="twitchteam:twitch"></core-icon-button>
           </content>
         </core-toolbar>
         <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
-          <div class="element-label" hidden?="{{narrow}}">{{item.displayName}}</div>
+          <div id="card-header" hidden?="{{narrow}}" horizontal justified layout center>
+            <div class="element-label">{{item.displayName}}</div>
+            <div flex></div>
+            <paper-button class="{{ {'colored-button': !following, 'uncolored-button': following} | tokenList }}" on-tap="{{toggleFollow}}" hidden?="{{!loggedIn}}" raised>
+              <core-icon icon="check" hidden?="{{!following}}"></core-icon>
+              <span hidden?="{{!following}}">Following</span>
+              <span hidden?="{{following}}">Follow</span>
+            </paper-button>
+          </div>
           <div id="frame" horizontal?="{{!narrow}}" vertical?="{{narrow}}" layout>
             <div id="streamContainer" flex?="{{!narrow}}">
               <iframe id="streamFrame" src="//www.twitch.tv/{{item.broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
@@ -49,10 +58,21 @@
 
       Polymer({
         responsiveWidth: '860px',
+        loggedIn: false,
+        following: false,
+        twitchUsername: '',
 
         ready: function() {
           window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
           window.addEventListener('resize', this.updateHeights.bind(this));
+          Twitch.events.addListener('auth.login', function() {
+            this.loggedIn = true;
+            document.getElementsByClassName('sourceButton')[0].hidden = true;
+
+            Twitch.api({method: 'user'}, function(error, user) {
+              this.twitchUsername = user.name;
+            }.bind(this));
+          }.bind(this));
         },
 
         domReady: function() {
@@ -63,6 +83,13 @@
 
         updateBroadcasterName: function() {
           var route = window.location.hash.slice(1);
+
+          if(this.loggedIn) {
+            Twitch.api({method: '/users/' + this.twitchUsername + '/follows/channels/' + route}, function(error, follow) {
+              this.following = error === null;
+            }.bind(this))
+          }
+
           for (var i = 0, item; item = this.$.menu.items[i]; i++) {
             if (item.getAttribute('broadcaster') === route) {
               this.$.menu.selected = i;
@@ -118,15 +145,25 @@
         },
 
         updateHeights: function() {
-          console.log((this.narrow ? this.$.chatContainer.offsetHeight : newHeight));
           var newHeight = this.$.streamFrame.offsetWidth * 9.0 / 16.0 + 30.25;
           this.$.streamFrame.height = newHeight;
           this.$.chatFrame.height = (this.narrow ? this.$.chatContainer.offsetHeight : newHeight);
         },
 
-        viewSourceAction: function() {
-          window.open('view-source:' + this.contentWindow.location.href,
-            this.item.broadcaster);
+        loginWithTwitch: function() {
+          Twitch.login({
+            scope: ['user_read', 'user_follows_edit', 'chat_login']
+          });
+        },
+
+        toggleFollow: function() {
+          var route = window.location.hash.slice(1);
+          var httpVerb = this.following ? 'DELETE' : 'PUT'
+
+          if(this.loggedIn) {
+            Twitch.api({method: '/users/' + this.twitchUsername + '/follows/channels/' + route, verb: httpVerb});
+            this.following = !this.following;
+          }
         }
       });
     })();

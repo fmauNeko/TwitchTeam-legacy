@@ -99,16 +99,30 @@ polyfill-next-selector { content: '#drawerPanel:not([narrow]) .menuButton';}
   display: none;
 }
 
-.element-label {
-  font-family: 'Montserrat', sans-serif;
+#card-header {
   height: 80px;
-  line-height: 80px;
   padding-left: 24px;
+  padding-right: 24px;
+}
+
+.element-label {
+  line-height: 80px;
+  font-size: 24px;
+  font-family: 'Montserrat', sans-serif;
   background-color: #fff;
   letter-spacing: 0.05em;
-  font-size: 24px;
   font-weight: 400;
   color: #388E3C;
+}
+
+.colored-button {
+  color: #fff;
+  background-color: #388E3C;
+}
+
+.uncolored-button {
+  color: #388E3C;
+  background-color: #ccc;
 }
 
 #frame {
