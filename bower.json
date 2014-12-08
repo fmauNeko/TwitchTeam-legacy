@@ -6,7 +6,7 @@
     "paper-elements": "Polymer/paper-elements#^0.4.0",
     "polymer": "Polymer/polymer#^0.4.0",
     "ThingModel": "~0.19.2",
-    "zepto": "~1.1.4"
+    "zeptojs": "~1.1.4"
   },
   "devDependencies": {
     "polymer-test-tools": "Polymer/polymer-test-tools#^0.4.0"
