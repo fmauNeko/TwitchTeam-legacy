@@ -157,7 +157,7 @@ module.exports = function (grunt) {
       }
     },
     clean: {
-      dist: ['.tmp', '<%= yeoman.dist %>/*'],
+      dist: ['.tmp', '<%= yeoman.dist %>/*', '!<%= yeoman.dist %>/web.config'],
       server: '.tmp'
     },
     jshint: {

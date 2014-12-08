@@ -1,0 +1,93 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-icon/core-icon.html">
+<link rel="import" href="../../bower_components/core-icons/av-icons.html">
+<link rel="import" href="../../bower_components/core-icons/social-icons.html">
+<link rel="import" href="../../bower_components/paper-ripple/paper-ripple.html">
+
+<link href="twitchteam-broadcaster.css" rel="stylesheet" shim-shadowdom>
+
+<polymer-element name="twitchteam-broadcaster" attributes="broadcaster" center horizontal layout>
+  <template>
+    <paper-ripple id="ripple"></paper-ripple>
+    <img id="avatar" src="{{avatar}}" self-start/>
+    <div id="infos" self-start vertical around-justified layout center flex>
+      <div id="broadcasterName">{{displayName}}</div>
+      <div id="game">playing {{game}}</div>
+      <div id="status"><div id="innerStatus">{{status}}</div></div>
+    </div>
+    <div id="live" live?="{{live}}" horizontal justified layout center>
+      <div class="well" horizontal layout center>
+        <core-icon icon="{{live ? 'check-circle-blank' : 'av:stop'}}" red?="{{live}}"></core-icon>
+        <div class="count">{{live ? 'LIVE' : 'OFFLINE'}}</div>
+      </div>
+      <div flex></div>
+      <div class="well" horizontal layout center>
+        <core-icon icon="social:person" hidden?="{{!live}}" red></core-icon>
+        <div class="count" hidden?="{{!live}}" margin>{{viewers}}</div>
+        <core-icon icon="visibility"></core-icon>
+        <div class="count" margin>{{views}}</div>
+        <core-icon icon="favorite"></core-icon>
+        <div class="count">{{followers}}</div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    (function () {
+      'use strict';
+
+      Polymer({
+        avatar: '',
+        displayName: '',
+        followers: '',
+        game: '',
+        live: false,
+        status: '',
+        viewers: '',
+        views: '',
+
+        domReady: function() {
+          this.async(function() {
+            var statusWidth = this.$.innerStatus.scrollWidth;
+            var infosWidth = this.$.infos.offsetWidth;
+
+            if(statusWidth > infosWidth) {
+              var scrollDistance = statusWidth - infosWidth;
+              document.timeline.play(new Animation(this.$.innerStatus, [
+                {offset: 0.2, transform: "translateX(0)"},
+                {offset: 0.8, transform: "translateX(-" + scrollDistance + ")"},
+                {offset: 1, transform: "translateX(-" + scrollDistance + ")"}
+              ], {duration: scrollDistance * 100, iterations: Infinity}));
+            }
+          }, null, 3000);
+        },
+
+        eventDelegates: {
+          'down': 'downAction',
+          'up': 'upAction'
+        },
+
+        downAction: function(e) {
+          this.$.ripple.downAction(e);
+        },
+
+        upAction: function(e) {
+          this.$.ripple.upAction(e);
+        },
+
+        updateStatus: function(thing){
+          this.avatar = thing.String("avatar");
+          this.broadcaster = thing.String("broadcaster");
+          this.displayName = thing.String("displayName");
+          this.followers = thing.Int("followers").toLocaleString();
+          this.game = thing.String("game");
+          this.live = thing.Boolean("live");
+          this.status = thing.String("status");
+          this.viewers = thing.Int("viewers").toLocaleString();
+          this.views = thing.Int("views").toLocaleString();
+        }
+      });
+
+    })();
+  </script>
+</polymer-element>

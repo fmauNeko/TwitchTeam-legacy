@@ -1,17 +1,171 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/core-toolbar/core-toolbar.html">
+<link rel="import" href="../../bower_components/core-drawer-panel/core-drawer-panel.html">
+<link rel="import" href="../../bower_components/core-header-panel/core-header-panel.html">
+<link rel="import" href="../../bower_components/core-menu/core-menu.html">
+<link rel="import" href="../../bower_components/core-menu/core-submenu.html">
+<link rel="import" href="../../bower_components/core-icon-button/core-icon-button.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../twitchteam-broadcaster/twitchteam-broadcaster.html">
 
-<polymer-element name="twitchteam-scaffold" attributes="">
+<polymer-element name="twitchteam-scaffold" attributes="label responsiveWidth">
   <template>
     <link rel="stylesheet" href="twitchteam-scaffold.css">
+    <core-drawer-panel id="drawerPanel" narrow="{{narrow}}" drawerWidth="320px" responsiveWidth="{{responsiveWidth}}">
+      <core-header-panel id="mainHeaderPanel" main mode="{{narrow ? 'waterfall' : 'cover'}}" shadow>
+        <core-toolbar class="{{ {'medium-tall' : !narrow} | tokenList }}">
+          <content select=".menuButton" on-tap="{{togglePanel}}">
+            <core-icon-button class="menuButton fallback" icon="menu"></core-icon-button>
+          </content>
+          <div hidden?="{{!narrow}}">{{item.displayName}}</div>
+          <content select=".sourceButton" on-tap="{{loginWithTwitch}}">
+            <core-icon-button class="sourceButton fallback" icon="twitchteam:twitch"></core-icon-button>
+          </content>
+        </core-toolbar>
+        <div id="card" on-transitionend="{{cardTransitionDone}}" hidden?="{{!item}}">
+          <div id="card-header" hidden?="{{narrow}}" horizontal justified layout center>
+            <div class="element-label">{{item.displayName}}</div>
+            <div flex></div>
+            <paper-button class="{{ {'colored-button': !following, 'uncolored-button': following} | tokenList }}" on-tap="{{toggleFollow}}" hidden?="{{!loggedIn}}" raised>
+              <core-icon icon="check" hidden?="{{!following}}"></core-icon>
+              <span hidden?="{{!following}}">Following</span>
+              <span hidden?="{{following}}">Follow</span>
+            </paper-button>
+          </div>
+          <div id="frame" horizontal?="{{!narrow}}" vertical?="{{narrow}}" layout>
+            <div id="streamContainer" flex?="{{!narrow}}">
+              <iframe id="streamFrame" src="//www.twitch.tv/{{item.broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
+            </div>
+            <div id="chatContainer" flex?="{{narrow}}">
+              <iframe id="chatFrame" src="//www.twitch.tv/{{item.broadcaster}}/chat?popout=" frameborder="0" scrolling="no"></iframe>
+            </div>
+          </div>
+        </div>
+      </core-header-panel>
+      <core-header-panel drawer>
+        <core-toolbar class="{{ {'medium-tall' : !narrow} | tokenList }}">
+          <div class="bottom main-label fit">{{label}}</div>
+        </core-toolbar>
+        <core-menu id="menu" on-core-select="{{menuSelect}}">
+          <content></content>
+        </core-menu>
+      </core-header-panel>
+    </core-drawer-panel>
   </template>
   <script>
     (function () {
       'use strict';
 
       Polymer({
-        // define element prototype here
-      });
+        responsiveWidth: '860px',
+        loggedIn: false,
+        following: false,
+        twitchUsername: '',
 
+        ready: function() {
+          window.addEventListener('hashchange', this.updateBroadcasterName.bind(this));
+          window.addEventListener('resize', this.updateHeights.bind(this));
+          Twitch.events.addListener('auth.login', function() {
+            this.loggedIn = true;
+            document.getElementsByClassName('sourceButton')[0].hidden = true;
+
+            Twitch.api({method: 'user'}, function(error, user) {
+              this.twitchUsername = user.name;
+            }.bind(this));
+          }.bind(this));
+        },
+
+        domReady: function() {
+          this.async(function() {
+            this.updateBroadcasterName();
+          }, null, 1000);
+        },
+
+        updateBroadcasterName: function() {
+          var route = window.location.hash.slice(1);
+
+          if(this.loggedIn) {
+            Twitch.api({method: '/users/' + this.twitchUsername + '/follows/channels/' + route}, function(error, follow) {
+              this.following = error === null;
+            }.bind(this))
+          }
+
+          for (var i = 0, item; item = this.$.menu.items[i]; i++) {
+            if (item.getAttribute('broadcaster') === route) {
+              this.$.menu.selected = i;
+              return;
+            }
+          }
+          this.$.menu.selected = this.$.menu.selected || 0;
+        },
+
+        menuSelect: function(e, detail) {
+          if (detail.isSelected) {
+            this.item = detail.item;
+            if (this.item.children.length) {
+              this.item.selected = 0;
+            }
+            this.item.broadcaster = this.item.getAttribute('broadcaster');
+            window.location.hash = this.item.broadcaster;
+            if (this.narrow) {
+              this.$.drawerPanel.closeDrawer();
+            }
+            this.animateCard();
+          }
+        },
+
+        animateCard: function() {
+          this.$.card.classList.remove('move-up');
+          this.$.card.style.display = 'none';
+          this.async(function() {
+            this.$.card.style.display = 'block';
+            this.moveCard(this.$.mainHeaderPanel.offsetHeight);
+            this.async(function() {
+              this.$.card.classList.add('move-up');
+              this.moveCard(null);
+            }, null, 300);
+          });
+        },
+
+        moveCard: function(y) {
+          var s = this.$.card.style;
+          s.webkitTransform = s.transform =
+            y ? 'translate3d(0, ' + y + 'px,0)' : '';
+        },
+
+        cardTransitionDone: function() {
+          if (this.$.card.classList.contains('move-up')) {
+            this.$.card.classList.remove('move-up');
+          }
+          this.updateHeights();
+        },
+
+        togglePanel: function() {
+          this.$.drawerPanel.togglePanel();
+        },
+
+        updateHeights: function() {
+          var newHeight = this.$.streamFrame.offsetWidth * 9.0 / 16.0 + 30.25;
+          this.$.streamFrame.height = newHeight;
+          this.$.chatFrame.height = (this.narrow ? this.$.chatContainer.offsetHeight : newHeight);
+        },
+
+        loginWithTwitch: function() {
+          Twitch.login({
+            scope: ['user_read', 'user_follows_edit', 'chat_login']
+          });
+        },
+
+        toggleFollow: function() {
+          var route = window.location.hash.slice(1);
+          var httpVerb = this.following ? 'DELETE' : 'PUT'
+
+          if(this.loggedIn) {
+            Twitch.api({method: '/users/' + this.twitchUsername + '/follows/channels/' + route, verb: httpVerb});
+            this.following = !this.following;
+          }
+        }
+      });
     })();
   </script>
 </polymer-element>

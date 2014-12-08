@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Polymer WebApp</title>
+  <title>Dissidence</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -13,7 +13,28 @@
   <link rel="stylesheet" href="styles/main.css">
   <!-- endbuild-->
 
+  <!-- build:js scripts/libraries.js -->
   <script src="bower_components/platform/platform.js"></script>
+  <script src="bower_components/bytebuffer/dist/ByteBufferAB.js"></script>
+  <script src="bower_components/protobuf/dist/ProtoBuf.js"></script>
+  <script src="bower_components/lodash/dist/lodash.js"></script>
+  <script src="bower_components/ThingModel/TypeScript/build/ThingModel.js"></script>
+  <script src="bower_components/web-animations-js/web-animations.js"></script>
+  <script src="bower_components/zeptojs/src/zepto.js"></script>
+  <script src="bower_components/zeptojs/src/event.js"></script>
+  <script src="bower_components/zeptojs/src/ajax.js"></script>
+  <script src="bower_components/zeptojs/src/form.js"></script>
+  <script src="bower_components/zeptojs/src/ie.js"></script>
+  <script src="bower_components/zeptojs/src/callbacks.js"></script>
+  <script src="bower_components/zeptojs/src/deferred.js"></script>
+  <!-- endbuild -->
+
+  <script src="//cdn.rawgit.com/justintv/twitch-js-sdk/master/twitch.min.js"></script>
+
+  <!-- build:js scripts/config.js -->
+  <script src="scripts/config.js"></script>
+  <!-- endbuild-->
+
   <!-- build:vulcanized elements/elements.vulcanized.html -->
   <link rel="import" href="elements/elements.html">
   <!-- endbuild-->
@@ -21,8 +42,9 @@
 
 <body unresolved>
 
-  <twitchteam-scaffold>
-
+  <twitchteam-scaffold label="Dissidence">
+    <paper-icon-button class="menuButton" icon="menu" ></paper-icon-button>
+    <paper-fab class="sourceButton bottom" icon="twitchteam:twitch"></paper-fab>
   </twitchteam-scaffold>
 
   <!-- build:js scripts/app.js -->
