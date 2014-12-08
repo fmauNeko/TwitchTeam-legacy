@@ -154,6 +154,16 @@
           Twitch.login({
             scope: ['user_read', 'user_follows_edit', 'chat_login']
           });
+        },
+
+        toggleFollow: function() {
+          var route = window.location.hash.slice(1);
+          var httpVerb = this.following ? 'DELETE' : 'PUT'
+
+          if(this.loggedIn) {
+            Twitch.api({method: '/users/' + this.twitchUsername + '/follows/channels/' + route, verb: httpVerb});
+            this.following = !this.following;
+          }
         }
       });
     })();
