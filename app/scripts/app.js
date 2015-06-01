@@ -1,69 +1,77 @@
-var Broadcasters = {alwaysontop: [], live: [], offline: []};
+var Streams = {alwaysOnTop: [], live: [], offline: []};
 
-var TwitchThing = function() {
+var TwitchTeam = function() {
   'use strict';
+
+  this.version = '0.3.0';
 
   this.warehouse = new ThingModel.Warehouse();
 
   this.warehouse.RegisterObserver({
     New: function(thing) {
-      var broadcasterElement = document.createElement('twitchteam-broadcaster');
-      broadcasterElement.setAttribute('broadcaster', thing.ID);
-      broadcasterElement.setAttribute('id', thing.ID + 'Status');
-      broadcasterElement.updateStatus(thing);
+      if(thing.Type.Name === 'Stream') {
+        if (config.broadcasters.indexOf(thing.ID) < 0) return;
 
-      if(thing.Boolean('alwaysontop')) {
-        Broadcasters.alwaysontop.push(thing.ID);
-        Broadcasters.alwaysontop.sort();
-      } else if(thing.Boolean('live')) {
-        Broadcasters.live.push(thing.ID);
-        Broadcasters.live.sort();
-      } else {
-        Broadcasters.offline.push(thing.ID);
-        Broadcasters.offline.sort();
-      }
+        var broadcasterElement = document.createElement('twitchteam-broadcaster');
+        broadcasterElement.setAttribute('broadcaster', thing.ID);
+        broadcasterElement.setAttribute('id', thing.ID + 'Status');
+        broadcasterElement.updateStatus(thing);
 
-      var elements = Broadcasters.alwaysontop.concat(Broadcasters.live.concat(Broadcasters.offline));
-      var index = elements.indexOf(thing.ID);
+        if (config.alwaysOnTop.indexOf(thing.ID) > -1) {
+          Streams.alwaysOnTop.push(thing.ID);
+          Streams.alwaysOnTop.sort();
+        } else if (thing.Boolean('live')) {
+          Streams.live.push(thing.ID);
+          Streams.live.sort();
+        } else {
+          Streams.offline.push(thing.ID);
+          Streams.offline.sort();
+        }
 
-      if(index === (elements.length - 1)) {
-        document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
-      } else {
-        var nextElement = document.getElementById(elements[index+1] + 'Status');
-        nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+        var elements = Streams.alwaysOnTop.concat(Streams.live.concat(Streams.offline));
+        var index = elements.indexOf(thing.ID);
+
+        if (index === (elements.length - 1)) {
+          document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
+        } else {
+          var nextElement = document.getElementById(elements[index + 1] + 'Status');
+          nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+        }
       }
     },
     Deleted: function() {},
     Updated: function(thing) {
-      if(!thing.Boolean('alwaysontop')) {
-        var broadcasterElement = document.getElementById(thing.ID + 'Status');
+      if(thing.Type.Name === 'Stream') {
+        if (config.alwaysOnTop.indexOf(thing.ID) < 0) {
+          var broadcasterElement = document.getElementById(thing.ID + 'Status');
 
-        if (broadcasterElement !== null) {
-          broadcasterElement.updateStatus(thing);
+          if (broadcasterElement !== null) {
+            broadcasterElement.updateStatus(thing);
 
-          var goingLive = thing.Boolean('live') && (Broadcasters.offline.indexOf(thing.ID) > -1);
-          var goingOffline = !thing.Boolean('live') && (Broadcasters.live.indexOf(thing.ID) > -1);
+            var goingLive = thing.Boolean('live') && (Streams.offline.indexOf(thing.ID) > -1);
+            var goingOffline = !thing.Boolean('live') && (Streams.live.indexOf(thing.ID) > -1);
 
-          if (goingLive) {
-            Broadcasters.offline.splice(Broadcasters.offline.indexOf(thing.ID), 1);
-            Broadcasters.live.push(thing.ID);
-            Broadcasters.live.sort();
-          } else if (goingOffline) {
-            Broadcasters.live.splice(Broadcasters.live.indexOf(thing.ID), 1);
-            Broadcasters.offline.push(thing.ID);
-            Broadcasters.offline.sort();
-          }
+            if (goingLive) {
+              Streams.offline.splice(Streams.offline.indexOf(thing.ID), 1);
+              Streams.live.push(thing.ID);
+              Streams.live.sort();
+            } else if (goingOffline) {
+              Streams.live.splice(Streams.live.indexOf(thing.ID), 1);
+              Streams.offline.push(thing.ID);
+              Streams.offline.sort();
+            }
 
-          if (goingLive || goingOffline) {
-            var elements = Broadcasters.alwaysontop.concat(Broadcasters.live.concat(Broadcasters.offline));
-            var index = elements.indexOf(thing.ID);
+            if (goingLive || goingOffline) {
+              var elements = Streams.alwaysOnTop.concat(Streams.live.concat(Streams.offline));
+              var index = elements.indexOf(thing.ID);
 
-            broadcasterElement.parentElement.removeChild(broadcasterElement);
-            if (index === (elements.length - 1)) {
-              document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
-            } else {
-              var nextElement = document.getElementById(elements[index + 1] + 'Status');
-              nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+              broadcasterElement.parentElement.removeChild(broadcasterElement);
+              if (index === (elements.length - 1)) {
+                document.getElementsByTagName('twitchteam-scaffold')[0].appendChild(broadcasterElement);
+              } else {
+                var nextElement = document.getElementById(elements[index + 1] + 'Status');
+                nextElement.parentElement.insertBefore(broadcasterElement, nextElement);
+              }
             }
           }
         }
@@ -73,13 +81,22 @@ var TwitchThing = function() {
   });
 
   this.client = new ThingModel.WebSockets.Client('TwitchTeam', config.webSocket, this.warehouse);
+
+  this.broadcasterType = ThingModel.BuildANewThingType.Named('Broadcaster').WhichIs('A Twitch.TV Broadcaster').ContainingA.String('name', 'Name').WhichIs('The name of the broadcaster').Build();
+
+  config.broadcasters.forEach(function(val, index, arr) {
+    if(!this.warehouse.GetThing('_' + val))
+      this.warehouse.RegisterThing(ThingModel.BuildANewThing.As(this.broadcasterType).IdentifiedBy('_' + val).ContainingA.String('broadcaster', val).Build());
+  }, this);
+
+  this.client.Send();
 };
 
 (function(document) {
   'use strict';
 
   document.addEventListener('polymer-ready', function() {
-    var twitchThing = new TwitchThing();
+    var twitchThing = new TwitchTeam();
 
     Twitch.init({clientId: config.twitchClientId}, function(error, status) {
       if (error) {
