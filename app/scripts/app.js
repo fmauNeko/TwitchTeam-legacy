@@ -1,7 +1,9 @@
 var Streams = {alwaysOnTop: [], live: [], offline: []};
 
-var TwitchThing = function() {
+var TwitchTeam = function() {
   'use strict';
+
+  this.version = '0.3.0';
 
   this.warehouse = new ThingModel.Warehouse();
 
@@ -94,7 +96,7 @@ var TwitchThing = function() {
   'use strict';
 
   document.addEventListener('polymer-ready', function() {
-    var twitchThing = new TwitchThing();
+    var twitchThing = new TwitchTeam();
 
     Twitch.init({clientId: config.twitchClientId}, function(error, status) {
       if (error) {
