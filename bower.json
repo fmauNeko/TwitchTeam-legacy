@@ -12,6 +12,6 @@
     "polymer-test-tools": "Polymer/polymer-test-tools#^0.5"
   },
   "resolutions": {
-    "webcomponentsjs": "0.7.20"
+    "webcomponentsjs": "~0.7"
   }
 }
