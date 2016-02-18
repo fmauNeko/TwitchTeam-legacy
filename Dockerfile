@@ -12,11 +12,11 @@ RUN mkdir -p /home/twitchteam && chown -R twitchteam:twitchteam /home/twitchteam
 USER twitchteam
 
 COPY package.json /usr/src/app/
-RUN npm install
+RUN npm -q install
 
 COPY bower.json /usr/src/app/
 COPY .bowerrc /usr/src/app/
-RUN bower install
+RUN bower -q install
 
 COPY . /usr/src/app
 RUN mkdir -p /usr/src/app/dist/scripts
