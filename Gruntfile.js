@@ -143,6 +143,7 @@ module.exports = function (grunt) {
       },
       dist: {
         options: {
+          hostname: '0.0.0.0',
           middleware: function (connect) {
             return [
               mountFolder(connect, yeomanConfig.dist)
@@ -281,7 +282,7 @@ module.exports = function (grunt) {
 
   grunt.registerTask('serve', function (target) {
     if (target === 'dist') {
-      return grunt.task.run(['build', 'open', 'connect:dist:keepalive']);
+      return grunt.task.run(['build', 'connect:dist:keepalive']);
     }
 
     grunt.task.run([
