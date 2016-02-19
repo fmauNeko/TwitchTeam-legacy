@@ -6,12 +6,13 @@
     "paper-elements": "Polymer/paper-elements#^0.5",
     "polymer": "Polymer/polymer#^0.5",
     "ThingModel": "~0.19.2",
-    "zeptojs": "~1.1.6"
+    "zeptojs": "~1.1.6",
+    "webcomponentsjs": "~0.6.3"
   },
   "devDependencies": {
     "polymer-test-tools": "Polymer/polymer-test-tools#^0.5"
   },
   "resolutions": {
-    "webcomponentsjs": "^0.7.0"
+    "webcomponentsjs": "~0.6.3"
   }
 }
