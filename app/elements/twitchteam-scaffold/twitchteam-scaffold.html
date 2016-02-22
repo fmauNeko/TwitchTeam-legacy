@@ -34,7 +34,7 @@
           </div>
           <div id="frame" horizontal?="{{!narrow}}" vertical?="{{narrow}}" layout>
             <div id="streamContainer" flex?="{{!narrow}}">
-              <iframe id="streamFrame" src="//www.twitch.tv/{{item.broadcaster}}/embed" frameborder="0" scrolling="no"></iframe>
+              <iframe id="streamFrame" src="//player.twitch.tv/?channel={{item.broadcaster}}" frameborder="0" scrolling="no"></iframe>
             </div>
             <div id="chatContainer" flex?="{{narrow}}">
               <iframe id="chatFrame" src="//www.twitch.tv/{{item.broadcaster}}/chat?popout=" frameborder="0" scrolling="no"></iframe>
