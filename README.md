@@ -1,3 +1,6 @@
+DEPRECATED
+This is the legacy version of TwitchTeam. For the new rewrite, please refer to [TwitchTeam](https://github.com/fmauNeko/TwitchTeam)
+
 TwitchTeam
 ==========
 
